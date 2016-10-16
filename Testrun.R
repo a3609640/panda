@@ -1,4 +1,5 @@
 setwd("~/Analysis/Testrun/STAR/results")
+
 test1.1 <- read.table("test1-1ReadsPerGene.out.tab",stringsAsFactors=T)
 test1.2 <- read.table("test1-2ReadsPerGene.out.tab",stringsAsFactors=T)
 test1.3 <- read.table("test1-3ReadsPerGene.out.tab",stringsAsFactors=T)
