@@ -1,95 +1,98 @@
-setwd("~/Analysis/Testrun/STAR/results")
-test1.1 <- read.table("test1-1ReadsPerGene.out.tab",stringsAsFactors=T)
-test1.2 <- read.table("test1-2ReadsPerGene.out.tab",stringsAsFactors=T)
-test1.3 <- read.table("test1-3ReadsPerGene.out.tab",stringsAsFactors=T)
-test1.4 <- read.table("test1-4ReadsPerGene.out.tab",stringsAsFactors=T)
-test2.1 <- read.table("test2-1ReadsPerGene.out.tab",stringsAsFactors=T)
-test2.2 <- read.table("test2-2ReadsPerGene.out.tab",stringsAsFactors=T)
-test2.3 <- read.table("test2-3ReadsPerGene.out.tab",stringsAsFactors=T)
-test2.4 <- read.table("test2-4ReadsPerGene.out.tab",stringsAsFactors=T)
-test3.1 <- read.table("test3-1ReadsPerGene.out.tab",stringsAsFactors=T)
-test3.2 <- read.table("test3-2ReadsPerGene.out.tab",stringsAsFactors=T)
-test3.3 <- read.table("test3-3ReadsPerGene.out.tab",stringsAsFactors=T)
-test3.4 <- read.table("test3-4ReadsPerGene.out.tab",stringsAsFactors=T)
-test4.1 <- read.table("test4-1ReadsPerGene.out.tab",stringsAsFactors=T)
-test4.2 <- read.table("test4-2ReadsPerGene.out.tab",stringsAsFactors=T)
-test4.3 <- read.table("test4-3ReadsPerGene.out.tab",stringsAsFactors=T)
-test4.4 <- read.table("test4-4ReadsPerGene.out.tab",stringsAsFactors=T)
-test5.1 <- read.table("test5-1ReadsPerGene.out.tab",stringsAsFactors=T)
-test5.2 <- read.table("test5-2ReadsPerGene.out.tab",stringsAsFactors=T)
-test5.3 <- read.table("test5-3ReadsPerGene.out.tab",stringsAsFactors=T)
-test5.4 <- read.table("test5-4ReadsPerGene.out.tab",stringsAsFactors=T)
-test6.1 <- read.table("test6-1ReadsPerGene.out.tab",stringsAsFactors=T)
-test6.2 <- read.table("test6-2ReadsPerGene.out.tab",stringsAsFactors=T)
-test6.3 <- read.table("test6-3ReadsPerGene.out.tab",stringsAsFactors=T)
-test6.4 <- read.table("test6-4ReadsPerGene.out.tab",stringsAsFactors=T)
+# To convert the Ensembl IDs in the rownames of res to gene symbols and add them as a new column
+source("http://bioconductor.org/biocLite.R")
+biocLite("org.Hs.eg.db")
+library("org.Hs.eg.db")
+
+setwd("/Volumes/G-DRIVE\ mobile\ USB-C/Analysis/Testrun/STAR/results")
 
 # convert the values in first column of data frame into row names
 cols<-c("unstranded","1st strand","2nd strand")
-test1.1.with.rownames <- data.frame(test1.1[,-1], row.names=test1.1[,1])
-colnames(test1.1.with.rownames) <- paste0("test1.1.", 1:3)
-test1.2.with.rownames <- data.frame(test1.2[,-1], row.names=test1.2[,1])
-colnames(test1.2.with.rownames) <- paste0("test1.2.", 1:3)
-test1.3.with.rownames <- data.frame(test1.3[,-1], row.names=test1.3[,1])
-colnames(test1.3.with.rownames) <- paste0("test1.3.", 1:3)
-test1.4.with.rownames <- data.frame(test1.4[,-1], row.names=test1.4[,1])
-colnames(test1.4.with.rownames) <- paste0("test1.4.", 1:3)
-test2.1.with.rownames <- data.frame(test2.1[,-1], row.names=test2.1[,1])
-colnames(test2.1.with.rownames) <- paste0("test2.1.", 1:3)
-test2.2.with.rownames <- data.frame(test2.2[,-1], row.names=test2.2[,1])
-colnames(test2.2.with.rownames) <- paste0("test2.2.", 1:3)
-test2.3.with.rownames <- data.frame(test2.3[,-1], row.names=test2.3[,1])
-colnames(test2.3.with.rownames) <- paste0("test2.3.", 1:3)
-test2.4.with.rownames <- data.frame(test2.4[,-1], row.names=test2.4[,1])
-colnames(test2.4.with.rownames) <- paste0("test2.4.", 1:3)
-test3.1.with.rownames <- data.frame(test3.1[,-1], row.names=test3.1[,1])
-colnames(test3.1.with.rownames) <- paste0("test3.1.", 1:3)
-test3.2.with.rownames <- data.frame(test3.2[,-1], row.names=test3.2[,1])
-colnames(test3.2.with.rownames) <- paste0("test3.2.", 1:3)
-test3.3.with.rownames <- data.frame(test3.3[,-1], row.names=test3.3[,1])
-colnames(test3.3.with.rownames) <- paste0("test3.3.", 1:3)
-test3.4.with.rownames <- data.frame(test3.4[,-1], row.names=test3.4[,1])
-colnames(test3.4.with.rownames) <- paste0("test3.4.", 1:3)
-test4.1.with.rownames <- data.frame(test4.1[,-1], row.names=test4.1[,1])
-colnames(test4.1.with.rownames) <- paste0("test4.1.", 1:3)
-test4.2.with.rownames <- data.frame(test4.2[,-1], row.names=test4.2[,1])
-colnames(test4.2.with.rownames) <- paste0("test4.2.", 1:3)
-test4.3.with.rownames <- data.frame(test4.3[,-1], row.names=test4.3[,1])
-colnames(test4.3.with.rownames) <- paste0("test4.3.", 1:3)
-test4.4.with.rownames <- data.frame(test4.4[,-1], row.names=test4.4[,1])
-colnames(test4.4.with.rownames) <- paste0("test4.4.", 1:3)
-test5.1.with.rownames <- data.frame(test5.1[,-1], row.names=test5.1[,1])
-colnames(test5.1.with.rownames) <- paste0("test5.1.", 1:3)
-test5.2.with.rownames <- data.frame(test5.2[,-1], row.names=test5.2[,1])
-colnames(test5.2.with.rownames) <- paste0("test5.2.", 1:3)
-test5.3.with.rownames <- data.frame(test5.3[,-1], row.names=test5.3[,1])
-colnames(test5.3.with.rownames) <- paste0("test5.3.", 1:3)
-test5.4.with.rownames <- data.frame(test5.4[,-1], row.names=test5.4[,1])
-colnames(test5.4.with.rownames) <- paste0("test5.4.", 1:3)
-test6.1.with.rownames <- data.frame(test6.1[,-1], row.names=test6.1[,1])
-colnames(test6.1.with.rownames) <- paste0("test6.1.", 1:3)
-test6.2.with.rownames <- data.frame(test6.2[,-1], row.names=test6.2[,1])
-colnames(test6.2.with.rownames) <- paste0("test6.2.", 1:3)
-test6.3.with.rownames <- data.frame(test6.3[,-1], row.names=test6.3[,1])
-colnames(test6.3.with.rownames) <- paste0("test6.3.", 1:3)
-test6.4.with.rownames <- data.frame(test6.4[,-1], row.names=test6.4[,1])
-colnames(test6.4.with.rownames) <- paste0("test6.4.", 1:3)
 
-# merge all gene count files into one files using cbind
-test <- cbind.data.frame(test1.1.with.rownames,test1.2.with.rownames,test1.3.with.rownames,test1.4.with.rownames,test2.1.with.rownames,test2.2.with.rownames,test2.3.with.rownames,test2.4.with.rownames,test3.1.with.rownames,test3.2.with.rownames,test3.3.with.rownames,test3.4.with.rownames,test4.1.with.rownames,test4.2.with.rownames,test4.3.with.rownames,test4.4.with.rownames,test5.1.with.rownames,test5.2.with.rownames,test5.3.with.rownames,test5.4.with.rownames,test6.1.with.rownames,test6.2.with.rownames,test6.3.with.rownames,test6.4.with.rownames)
+inputFiles<-c(
+  "test1-1ReadsPerGene.out.tab",
+  "test1-2ReadsPerGene.out.tab",
+  "test1-3ReadsPerGene.out.tab",
+  "test1-4ReadsPerGene.out.tab",
+  "test2-1ReadsPerGene.out.tab",
+  "test2-2ReadsPerGene.out.tab",
+  "test2-3ReadsPerGene.out.tab",
+  "test2-4ReadsPerGene.out.tab",
+  "test3-1ReadsPerGene.out.tab",
+  "test3-2ReadsPerGene.out.tab",
+  "test3-3ReadsPerGene.out.tab",
+  "test3-4ReadsPerGene.out.tab",
+  "test4-1ReadsPerGene.out.tab",
+  "test4-2ReadsPerGene.out.tab",
+  "test4-3ReadsPerGene.out.tab",
+  "test4-4ReadsPerGene.out.tab",
+  "test5-1ReadsPerGene.out.tab",
+  "test5-2ReadsPerGene.out.tab",
+  "test5-3ReadsPerGene.out.tab",
+  "test5-4ReadsPerGene.out.tab",
+  "test6-1ReadsPerGene.out.tab",
+  "test6-2ReadsPerGene.out.tab",
+  "test6-3ReadsPerGene.out.tab",
+  "test6-4ReadsPerGene.out.tab"
+)
+
+# Sample format of each file:
+# N_unmapped      105984  105984 105984
+# N_multimapping  171224  171224 171224
+# N_noFeature     177533 3433150 277677
+# N_ambiguous     319796    9239 136511
+# ENSG00000223972      0       0      0
+# ENSG00000227232     10       0     10
+# ENSG00000278267      0       0      0
+# ...
+# 
+processFile <- function(fileName) {
+  table <- read.table(fileName, stringsAsFactors=T)
+  
+  # STAR generates data files that row names (for metadata like the number of
+  # unmapped segments, and for Ensembl gene designations) in the first column.
+  # We'd like to use those as the row names.
+  table.with.rownames <- data.frame(table[,-1], row.names=table[,1])
+  
+  # Furthermore, we'd like to rename the columns, using the test designator.
+  # For example, for data from the file 'test6-4ReadsPerGene.out.tab', we'd like
+  # the column headers to be 'test6.4.<N>', where N is the column number.
+  colnames(table.with.rownames) <-
+    paste0(
+      # This inner 'paste' will generate 'test6.4.' from
+      # 'test6-4ReadsPerGene.out.tab'.
+      paste(
+        substring(fileName, 1, 5),
+        substring(fileName, 7, 7),
+        '',  # gives us a trailing '.'
+        sep='.'),
+      1:3)
+  return(table.with.rownames)
+}
+
+
+# Merge the gene count tables.  The desired format of the merged data is:
+#
+#                 test1.1.1 test1.1.2 test1.1.3 test1.1.4 test1.1.5 ...
+# N_unmapped      105984       105984    105984
+# N_multimapping  171224       171224    171224
+# N_noFeature     177533      3433150    277677
+# N_ambiguous     319796         9239    136511
+# ENSG00000223972      0            0        0
+# ENSG00000227232     10            0       10
+# ENSG00000278267      0            0        0
+# ...
+#
+processedData <- lapply(inputFiles, processFile)
+test <- do.call(cbind.data.frame, processedData)
+
 # check the basic properties of SRP070081
 dim(test)
 nrow(test)
 length(test)
 colnames(test)
 
-# To convert the Ensembl IDs in the rownames of res to gene symbols and add them as a new column
-source("http://bioconductor.org/biocLite.R")
-biocLite("org.Hs.eg.db")
-library("org.Hs.eg.db")
 test$symbol <- mapIds(org.Hs.eg.db,
                       keys=row.names(test),
                       column="SYMBOL",
                       keytype="ENSEMBL",
                       multiVals="first")
-
