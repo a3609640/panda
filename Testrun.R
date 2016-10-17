@@ -91,6 +91,13 @@ nrow(test)
 length(test)
 colnames(test)
 
+
+# Finally, we want to add a column at the end, 'SYMBOL', to show the human-
+# readable name of each Ensembl gene designator.  Note that, in some cases,
+# a designator (e.g. ENSG00000123456) might have more than corresponding
+# human-readable name (e.g. SREBk17, SOX547).  Here, we just take the first
+# one (and expect R to warn us about the 1:many mapping of designators to
+# names).
 test$symbol <- mapIds(org.Hs.eg.db,
                       keys=row.names(test),
                       column="SYMBOL",
