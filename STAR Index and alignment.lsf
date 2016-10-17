@@ -1,0 +1,179 @@
+export test1="~/Testrun/NextseqTest-32743727/test1-40222594"
+
+## download and install STAR in erisone folder
+
+mkdir bin
+cd bin
+wget https://github.com/alexdobin/STAR/archive/2.5.2b.tar.gz
+tar –xzf 2.5.2b.tar.gz
+rm 2.5.2b.tar.gz
+chmod 755 STAR-2.5.2b/bin/MacOSX_x86_64/STAR
+# Be careful to choose the right executable depending on your system. Here I have chosen Linux. 
+ln -s STAR-2.5.2b/bin/Linux_x86_64/STAR star
+cd ..
+
+##########################################################################################
+## download the GRCh38 version of the human genome
+##########################################################################################
+# download the most recent GRCh38 FASTA files. Please note, that currently the most 
+# recent version of GRCh38 is release 86
+mkdir -p data/GRCh38/sequence
+cd data/GRCh38/sequence/
+wget ftp://ftp.ensembl.org/pub/release-86/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.{1..22}.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-86/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.{MT,X,Y}.fa.gz
+gunzip -c Homo_sapiens.GRCh38.dna.chromosome.* > GRCh38_r86.all.fa
+cd ../../../
+
+# download the annotation GTF file of the recent version of GRCh38: release 86
+mkdir -p data/GRCh38/annotation
+cd data/GRCh38/annotation/
+wget ftp://ftp.ensembl.org/pub/release-86/gtf/homo_sapiens/Homo_sapiens.GRCh38.86.gtf.gz
+gunzip Homo_sapiens.GRCh38.86.gtf.gz
+cd ../../../
+
+# download the most recent GRCh38 FASTA files. Please note, that currently the most 
+# recent version of GRCh38 is release 86
+cd ~/star
+wget ftp://ftp.ensembl.org/pub/release-86/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
+gzip -d Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
+bgzip Homo_sapiens.GRCh38.dna.primary_assembly.fa
+
+##########################################################################################
+## generate the STAR indices
+##########################################################################################
+# the splice-junction-data-base-overhang parameter should have a value of read length – 1
+# set it too 100, because our read length is 101
+# the runThreadN parameter determines how many threads you want to ask for. E.g. A late 2013 MacBook Pro with a 2.6 GHz Intel Core i7 processor, has 8 “cores” (4 “real” and 4 “virtual”) via Hyper Threading
+# The key limitation with STAR is computer RAM - STAR requires at least 30 Gb (30000 Mb) to align to the human or mouse genomes.
+bsub -Is -R 'rusage[mem=40000]' -n 4 /bin/bash
+
+# mkdir -p data/GRCh38/star_indices_overhang75
+cd ~/star/STARIndex
+
+# Run STAR to generate genome indices specifying correct path to the genome FASTA
+# and annotations GTF file: suggested code from current protocol of bioinformatics
+~/bin/star \
+--runThreadN 12 --runMode genomeGenerate --genomeDir ./ \
+--genomeFastaFiles ./Homo_sapiens.GRCh38.dna.primary_assembly.fa \
+--sjdbGTFfile ./Homo_sapiens.GRCh38.86.gtf \
+--sjdbOverhang 75
+
+#######################
+###Expecting output!###
+#######################
+# Oct 14 10:59:32 ..... started STAR run
+# Oct 14 10:59:32 ... starting to generate Genome files
+# Oct 14 11:00:39 ... starting to sort Suffix Array. This may take a long time...
+# Oct 14 11:01:01 ... sorting Suffix Array chunks and saving them to disk...
+# Oct 14 11:34:15 ... loading chunks from disk, packing SA...
+# Oct 14 11:35:18 ... finished generating suffix array
+# Oct 14 11:35:18 ... generating Suffix Array index
+# Oct 14 11:38:31 ... completed Suffix Array index
+# Oct 14 11:38:31 ..... processing annotations GTF
+# Oct 14 11:38:54 ..... inserting junctions into the genome indices
+# Oct 14 11:41:48 ... writing Genome to disk ...
+# Oct 14 11:41:54 ... writing Suffix Array to disk ...
+# Oct 14 11:42:46 ... writing SAindex to disk
+# Oct 14 11:42:50 ..... finished successfully
+
+##################
+###Listed files###
+##################
+
+# ls -lstr
+# total 36708480
+# 3387280 -rw-rw----. 1 sw542 sw542  3151425857 Oct 14 10:37 Homo_sapiens.GRCh38.dna.primary_assembly.fa
+# 1513744 -rw-rw----. 1 sw542 sw542  1408161843 Oct 14 10:39 Homo_sapiens.GRCh38.86.gtf
+#     32 -rw-rw----. 1 sw542 sw542         593 Oct 14 10:59 genomeParameters.txt
+#      32 -rw-rw----. 1 sw542 sw542        1923 Oct 14 11:00 chrName.txt
+#      32 -rw-rw----. 1 sw542 sw542        1200 Oct 14 11:00 chrLength.txt
+#      32 -rw-rw----. 1 sw542 sw542        2129 Oct 14 11:00 chrStart.txt
+#      32 -rw-rw----. 1 sw542 sw542        3123 Oct 14 11:00 chrNameLength.txt
+#   45312 -rw-rw----. 1 sw542 sw542    41854837 Oct 14 11:38 exonGeTrInfo.tab
+#    1200 -rw-rw----. 1 sw542 sw542      928822 Oct 14 11:38 geneInfo.tab
+#   12912 -rw-rw----. 1 sw542 sw542    11688566 Oct 14 11:38 transcriptInfo.tab
+#   18592 -rw-rw----. 1 sw542 sw542    16985258 Oct 14 11:38 exonInfo.tab
+#    8896 -rw-rw----. 1 sw542 sw542     8020752 Oct 14 11:38 sjdbList.fromGTF.out.tab
+#   11360 -rw-rw----. 1 sw542 sw542    10235562 Oct 14 11:38 sjdbInfo.txt
+#    8896 -rw-rw----. 1 sw542 sw542     8019182 Oct 14 11:38 sjdbList.out.tab
+# 3430144 -rw-rw----. 1 sw542 sw542  3191336269 Oct 14 11:41 Genome
+# 26586704 -rw-rw----. 1 sw542 sw542 24737185419 Oct 14 11:42 SA
+# 1683184 -rw-rw----. 1 sw542 sw542  1565873619 Oct 14 11:42 SAindex
+#      96 -rw-rw----. 1 sw542 sw542       37080 Oct 14 11:42 Log.out
+
+##########################################################################################
+## STAR alignment: basic alignment protocol
+##########################################################################################
+# Make a “run directory" for the basic protocol and switch to it
+mkdir -p ~/Analysis/Testrun/STAR/basic
+cd ~/Analysis/Testrun/STAR/basic
+
+## queue for an interactive command line session
+## change the file prefixes using --outFileNamePrefix /path/to/output/dir/prefix
+bsub -Is -R 'rusage[mem=40000]' -n 4 /bin/bash
+~/bin/star \
+ --genomeDir ~/star/STARIndex/ \
+ --sjdbGTFfile  ~/star/STARIndex/Homo_sapiens.GRCh38.86.gtf \
+ --runThreadN 24 \
+ --outFileNamePrefix ~/Analysis/Testrun/STAR/basic/test1-3 \
+ --readFilesIn ~/Testrun/NextseqTest-32743727/test1-40222594/test1_S2_L003_R1_001.fastq.gz ~/Testrun/NextseqTest-32743727/test1-40222594/test1_S2_L003_R2_001.fastq.gz \
+ --readFilesCommand zcat
+
+# -genomeFastaFiles using the same file as the one used at the genome generation step will cause error, remove -genomeFastaFiles parameter in basic alignment protocol
+
+
+##########################################################################################
+## STAR alignment: genecount protocol
+##########################################################################################
+# Make a “run directory" for the gene count protocol and switch to it
+mkdir -p ~/Analysis/Testrun/STAR/genecount
+cd ~/Analysis/Testrun/STAR/genecount
+
+# With --quantMode GeneCounts option STAR will count number reads per gene while mapping. A read is counted if it overlaps (1nt or more) one and only one gene. Both ends of the paired-end read are checked for overlaps. The counts coincide with those produced by htseq-count with default parameters. STAR outputs read counts per gene into ReadsPerGene.out.tab file with 4 columns which correspond to different strandedness options.
+# With --outSAMtype, STAR can output alignments directly in binary BAM format, thus saving time on converting SAM files to BAM. It can also sort BAM files by coordinates.
+
+read_files_base=~/Testrun/NextseqTest-32743727/test1-40222594
+
+data_tags=\
+test1_S2_L002 \
+test2_S3_L004 \
+test3_S4_L004 \
+test4_S6_L004 \
+test5_S5_L004 \
+test6_S1_L004 \
+
+for tag in $data_tags; do
+  ~/bin/star \
+   --genomeDir ~/star/STARIndex/ \
+   --sjdbGTFfile  ~/star/STARIndex/Homo_sapiens.GRCh38.86.gtf \
+   --runThreadN 24 \
+   --quantMode TranscriptomeSAM GeneCounts \
+   --outFileNamePrefix “~/Analysis/Testrun/STAR/genecount/$tag” \
+   --outSAMtype BAM SortedByCoordinate \
+   --readFilesIn “$read_files_base/$tag_R1_001.fastq.gz” \
+                 “$read_files_base/$tag_R2_001.fastq.gz” \
+   --readFilesCommand zcat
+done
+
+ 
+#######################
+###Expecting output!###
+#######################
+# Oct 14 14:23:34 ..... started STAR run
+# Oct 14 14:23:34 ..... loading genome
+# Oct 14 14:24:59 ..... processing annotations GTF
+# Oct 14 14:25:19 ..... inserting junctions into the genome indices
+# Oct 14 14:26:42 ..... started mapping
+# Oct 14 14:48:06 ..... started sorting BAM
+# Oct 14 14:48:15 ..... finished successfully
+
+#################
+download Starindex
+wget -r http://labshare.cshl.edu/shares/gingeraslab/wwwdata/dobin/STAR/STARgenomes/ENSEMBL/homo_sapiens/ENSEMBL.homo_sapiens.GRCh38.release-75/
+
+wget -r 
+http://labshare.cshl.edu/shares/gingeraslab/www-data/dobin/STAR/STARgenomes/ENSEMBL/homo_sapiens/ENSEMBL.homo_sapiens.release-75/
+
+
+
+
