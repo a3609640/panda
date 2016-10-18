@@ -1,5 +1,5 @@
 # Combine a raw data file per sample to a single merged file.
-#
+
 # Sample format of each file "testN-KReadsPerGene.out.tab":
 # N_unmapped      105984  105984 105984
 # N_multimapping  171224  171224 171224
