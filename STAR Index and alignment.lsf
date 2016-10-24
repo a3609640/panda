@@ -134,13 +134,14 @@ cd ~/Analysis/Testrun/STAR/genecount
 
 read_files_base=~/Testrun/NextseqTest-32743727/test1-40222594
 
-data_tags=\
+data_tags="\
 test1_S2_L002 \
 test2_S3_L004 \
 test3_S4_L004 \
 test4_S6_L004 \
 test5_S5_L004 \
 test6_S1_L004 \
+"
 
 for tag in $data_tags; do
   ~/bin/star \
