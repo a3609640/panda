@@ -1,12 +1,79 @@
-# To convert the Ensembl IDs in the rownames of res to gene symbols and add them as a new column
-source("http://bioconductor.org/biocLite.R")
-biocLite("org.Hs.eg.db")
+# Combine a raw data file per sample to a single merged file.
+
+# Sample format of each file "testN-KReadsPerGene.out.tab":
+# N_unmapped      105984  105984 105984
+# N_multimapping  171224  171224 171224
+# N_noFeature     177533 3433150 277677
+# N_ambiguous     319796    9239 136511
+# ENSG00000223972      0       0      0
+# ENSG00000227232     10       0     10
+# ENSG00000278267      0       0      0
+# ...
+# 
+#
+# The desired format of the merged data is:
+#                 test1.1.1 test1.1.2 test1.1.3 test1.2.1 test1.2.2 ...
+# N_unmapped      105984       105984    105984
+# N_multimapping  171224       171224    171224
+# N_noFeature     177533      3433150    277677
+# N_ambiguous     319796         9239    136511
+# ENSG00000223972      0            0        0
+# ENSG00000227232     10            0       10
+# ENSG00000278267      0            0        0
+# ...
+#
+# Row names indicate metadata like the number of unmapped segments,
+# and Ensembl gene designations.  The designations are translated
+# to human-readable form and appended as a final column in the merged
+# data, taking the first symbol (if any) for each designator, using
+# the "org.Hs.eg.db" package:
+#                 ...    SYMBOL
+# N_unmapped      ...      null
+# N_multimapping  ...      null
+# N_noFeature     ...      null
+# N_ambiguous     ...      null
+# ENSG00000223972 ...   DDX11L1
+# ENSG00000227232 ...    WASH7P
+# ENSG00000278267 ... MIR6859-1
+# ...
+
+# source("http://bioconductor.org/biocLite.R")
+# biocLite("org.Hs.eg.db") # for converting Ensembl IDs to gene symbols
 library("org.Hs.eg.db")
 
-setwd("/Volumes/G-DRIVE\ mobile\ USB-C/Analysis/Testrun/STAR/results")
+# Reframe a data file with desired row and column names.
+processFile <- function(fileBaseDir, fileName) {
+  fullFileName <- paste(fileBaseDir, fileName, sep='/')
+  table <- read.table(fullFileName, stringsAsFactors=T)
+  
+  # Reframe the data, taking row names from first column.
+  table.with.rownames <- data.frame(table[,-1], row.names=table[,1])
+  
+  # Generate 'test6.4.' from 'test6-4ReadsPerGene.out.tab'.
+  newColBaseName <- paste(substring(fileName, 1, 5),
+                          substring(fileName, 7, 7),
+                          '',  # gives us a trailing '.'
+                          sep='.')
+  
+  # Rename the columns as test6.4.1, test6.4.2, test6.4.3.
+  colnames(table.with.rownames) <- paste0(newColBaseName, 1:3)
+  return(table.with.rownames)
+}
 
-# convert the values in first column of data frame into row names
-cols<-c("unstranded","1st strand","2nd strand")
+# Merge reframed data from all input files, and add 'symbol' column.
+mergeFiles <- function(baseDir, files) {
+  processedData <- lapply(inputFiles, processFile, fileBaseDir=baseDir)
+  test <- do.call(cbind.data.frame, processedData)
+  
+  test$symbol <- mapIds(org.Hs.eg.db,
+                        keys=row.names(test),
+                        column="SYMBOL",
+                        keytype="ENSEMBL",
+                        multiVals="first")
+  return(test)
+}
+
+dataDir <- "/Volumes/G-DRIVE\ mobile\ USB-C/Analysis/Testrun/STAR/results"
 
 inputFiles<-c(
   "test1-1ReadsPerGene.out.tab",
@@ -35,71 +102,4 @@ inputFiles<-c(
   "test6-4ReadsPerGene.out.tab"
 )
 
-# Sample format of each file:
-# N_unmapped      105984  105984 105984
-# N_multimapping  171224  171224 171224
-# N_noFeature     177533 3433150 277677
-# N_ambiguous     319796    9239 136511
-# ENSG00000223972      0       0      0
-# ENSG00000227232     10       0     10
-# ENSG00000278267      0       0      0
-# ...
-# 
-processFile <- function(fileName) {
-  table <- read.table(fileName, stringsAsFactors=T)
-  
-  # STAR generates data files that row names (for metadata like the number of
-  # unmapped segments, and for Ensembl gene designations) in the first column.
-  # We'd like to use those as the row names.
-  table.with.rownames <- data.frame(table[,-1], row.names=table[,1])
-  
-  # Furthermore, we'd like to rename the columns, using the test designator.
-  # For example, for data from the file 'test6-4ReadsPerGene.out.tab', we'd like
-  # the column headers to be 'test6.4.<N>', where N is the column number.
-  colnames(table.with.rownames) <-
-    paste0(
-      # This inner 'paste' will generate 'test6.4.' from
-      # 'test6-4ReadsPerGene.out.tab'.
-      paste(
-        substring(fileName, 1, 5),
-        substring(fileName, 7, 7),
-        '',  # gives us a trailing '.'
-        sep='.'),
-      1:3)
-  return(table.with.rownames)
-}
-
-
-# Merge the gene count tables.  The desired format of the merged data is:
-#
-#                 test1.1.1 test1.1.2 test1.1.3 test1.1.4 test1.1.5 ...
-# N_unmapped      105984       105984    105984
-# N_multimapping  171224       171224    171224
-# N_noFeature     177533      3433150    277677
-# N_ambiguous     319796         9239    136511
-# ENSG00000223972      0            0        0
-# ENSG00000227232     10            0       10
-# ENSG00000278267      0            0        0
-# ...
-#
-processedData <- lapply(inputFiles, processFile)
-test <- do.call(cbind.data.frame, processedData)
-
-# check the basic properties of SRP070081
-dim(test)
-nrow(test)
-length(test)
-colnames(test)
-
-
-# Finally, we want to add a column at the end, 'SYMBOL', to show the human-
-# readable name of each Ensembl gene designator.  Note that, in some cases,
-# a designator (e.g. ENSG00000123456) might have more than corresponding
-# human-readable name (e.g. SREBk17, SOX547).  Here, we just take the first
-# one (and expect R to warn us about the 1:many mapping of designators to
-# names).
-test$symbol <- mapIds(org.Hs.eg.db,
-                      keys=row.names(test),
-                      column="SYMBOL",
-                      keytype="ENSEMBL",
-                      multiVals="first")
+test <- mergeFiles(dataDir, inputFiles)
