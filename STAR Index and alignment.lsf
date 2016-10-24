@@ -1,10 +1,4 @@
-
 export test1="~/Testrun/NextseqTest-32743727/test1-40222594"
-export BIOINF_CLASS="/data/mghcc_bioinf_class"
-export HG38="$BIOINF_CLASS/hg38"
-
-export test1="~/Testrun/NextseqTest-32743727/test1-40222594"
-export OUTPUT_DIR="$SUWUHW/SRP070081/SRR3168481"
 
 
 ## download and install STAR in erisone folder
