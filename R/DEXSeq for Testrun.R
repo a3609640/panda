@@ -1,15 +1,25 @@
 source("http://bioconductor.org/biocLite.R")
 biocLite("DEXSeq")
 library(DEXSeq)
+suppressPackageStartupMessages( library( "DEXSeq" ) )
+library(BiocParallel)
+
+
+
 ## check the two Python scripts, dexseq_prepare_annotation.py and dexseq_count.py, that come with the DEXSeq package.
 pythonScriptsDir = system.file( "python_scripts", package="DEXSeq" )
 list.files(pythonScriptsDir)
 
 ## read files into system, notice wildcard here: only files starting with test1 or test5
-countFiles1 = list.files(path = "/PHShome/sw542/HTSeq/ASO1", pattern="*.text", full.names=TRUE)
-basename(countFiles)
-flattenedFile = list.files(path = "/PHShome/sw542/HTSeq", pattern="*.chr.gff", full.names=TRUE)
+#countFiles1 = list.files(path = "/PHShome/sw542/HTSeq/ASO1", pattern="*.text", full.names=TRUE)
+#flattenedFile = list.files(path = "/PHShome/sw542/HTSeq", pattern="*.chr.gff", full.names=TRUE)
+
+countFiles1 = list.files(  path = "/home/data/su/data/Analysis/Testrun/HTSeq/ASO1", pattern="*.text", full.names=TRUE)
+flattenedFile = list.files(path = "/home/data/su/data/Analysis/Testrun/HTSeq", pattern="*.chr.gff", full.names=TRUE)
+
+basename(countFiles1)
 basename(flattenedFile)
+
 
 sampleTable1 = data.frame(
   row.names = c("test1-1","test1-2","test1-3","test1-4","test5-1", "test5-2","test5-3","test5-4"),
@@ -17,7 +27,6 @@ sampleTable1 = data.frame(
   libType = c( "paired-end", "paired-end", "paired-end", "paired-end"))
 sampleTable1
 
-suppressPackageStartupMessages( library( "DEXSeq" ) )
 dxd1 = DEXSeqDataSetFromHTSeq(
   countFiles1,
   sampleData=sampleTable1,
@@ -32,8 +41,7 @@ head( rowRanges(dxd1), 3 )
 sampleAnnotation(dxd1)
 
 
-library(BiocParallel)
-BPPARAM = MulticoreParam(workers=12)
+BPPARAM = MulticoreParam(workers=4)
 dxd1 = estimateSizeFactors(dxd1)
 dxd1 = estimateDispersions(dxd1, BPPARAM=BPPARAM)
 dxd1 = testForDEU(dxd1, BPPARAM=BPPARAM)

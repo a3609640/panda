@@ -1,0 +1,32 @@
+Package: Panda
+Title: Analyze RNA Sequencing Data
+Version: 0.1
+Authors@R: person("Su", "Wu", email = "fill@this.in.com",
+                  role = c("aut", "cre"))
+Description: This package was developed for assessment of sequencing data.
+    associated with the cellular metabolic process of lipogenesis, and the effects
+    of agents designed to inhibit that process.
+Depends:
+    R (>= 3.2.0)
+License: private; all use prohibited
+Imports:
+    datasets,
+    org.Hs.eg.db
+Suggests:
+    AnnotationDbi,
+    Biobase,
+    BiocGenerics,
+    devtools,
+    graphics,
+    grDevices,
+    IRanges,
+    markdown,
+    parallel,
+    rmarkdown,
+    roxygen2,
+    S4Vectors,
+    stats,
+    stats4,
+    testthat,
+    utils
+RoxygenNote: 5.0.1
