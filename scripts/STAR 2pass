@@ -56,5 +56,5 @@ for tag in $data_tags; do
 	echo "executing $cmd"
 	
 	# execute the command
-	$($cmd)
+	$cmd
 done
