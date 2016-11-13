@@ -40,9 +40,7 @@ test1_S2_L004 \
 
 for tag in $data_tags; do
   # construct the command to be executed
-  cmd="echo ---; \
-  echo execution begins ; \
-  ${STAR} \
+  cmd="${STAR} \
    --genomeDir ${star_index_root} \
    --sjdbGTFfile ${star_index_root}/Homo_sapiens.GRCh38.86.gtf \
    --runThreadN 24 \
@@ -50,13 +48,13 @@ for tag in $data_tags; do
    --readFilesIn $read_files_base/${tag}_R1_001.fastq.gz \
                  $read_files_base/${tag}_R2_001.fastq.gz \
    --readFilesCommand zcat \
-   --twopassMode Basic ; \
-   echo execution complete with code: $? \
-   echo ---" # add a visual divider in the output
+   --twopassMode Basic"
 
     # tell the user what command was constructed	
 	echo "executing $cmd"
-	
+  echo "---"	
 	# execute the command
 	$cmd
+	echo "command completed with code $?"
+	echo "---"
 done
