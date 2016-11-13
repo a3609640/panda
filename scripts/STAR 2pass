@@ -15,7 +15,6 @@ find $star_index_root
 mkdir -m 755 -p $output_dir -v
 
 # test/debug
-echo "test command"
 echo "star:"
 ls -l /PHShome/sw542/bin/star
 
@@ -23,6 +22,7 @@ echo "zcat:"
 which zcat
 ls -l `which zcat`
 
+echo "test command"
 
 /PHShome/sw542/bin/star    --genomeDir /PHShome/sw542/star/STARIndex    --sjdbGTFfile /PHShome/sw542/star/STARIndex/Homo_sapiens.GRCh38.86.gtf    --runThreadN 24    --outFileNamePrefix /PHShome/sw542/Analysis/Testrun/STAR/2passbam2/test1/test1_S2_L001    --readFilesIn /PHShome/sw542/Testrun/NextseqTest-32743727/test1-40222594/test1_S2_L001_R1_001.fastq.gz
 echo "test complete"
