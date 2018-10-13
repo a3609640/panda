@@ -1,0 +1,47 @@
+source("https://bioconductor.org/biocLite.R")
+
+# install the dependent files for DiffBind
+biocLite("GenomicFeatures")
+biocLite("GenomicRanges")
+biocLite("SummarizedExperiment")
+biocLite("VariantAnnotation")
+biocLite("RMySQL")
+biocLite("systemPipeR")
+biocLite("codetools")
+biocLite("DiffBind")
+
+library(GenomicFeatures)
+library(GenomicRanges)
+library(SummarizedExperiment)
+library(VariantAnnotation)
+library(RMySQL)
+library(systemPipeR)
+library(codetools)
+library(lattice)
+library(Matrix)
+library(spatial)
+library(DiffBind)
+# setwd(system.file("extra", package="DiffBind"))
+setwd("~/Documents/Bioinformatics analysis/ChIP analysis/A549-SREBP1")
+
+# examples <- read.csv("tamoxifen.csv")
+# names(examples)
+samples <- read.csv("Diffbinddata.csv")
+names(samples)
+tamoxifen <- dba(sampleSheet="Diffbinddata.csv")
+
+tamoxifen <- dba.count(tamoxifen)
+plot(tamoxifen) 
+tamoxifen <- dba.contrast(tamoxifen)
+plot(tamoxifen) 
+tamoxifen <- dba.analyze(tamoxifen)
+plot(tamoxifen, contrast=1)
+tamoxifen.DB <- dba.report(tamoxifen)
+corvals <- dba.plotHeatmap(tamoxifen)
+
+
+samples <- read.csv(file.path(system.file("extra", package="DiffBind"),"tamoxifen.csv"))
+names(samples)
+tamoxifen <- dba(sampleSheet="tamoxifen.csv")
+tamoxifen
+plot(tamoxifen)
