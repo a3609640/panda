@@ -1,4 +1,4 @@
-setwd("~/Documents/Bioinformatics analysis/Xena")
+
 library(readxl)
 DNFASKCMandTGEX <- read_excel("7DNFASKCMandTGEX.xls")
 View(DNFASKCMandTGEX)
